@@ -33,7 +33,7 @@ namespace V10
         {
             volume += .1f;
 
-            if (volume > 1f)
+            if (volume > 1.01f)
             {
                 volume = 0f;
             }
