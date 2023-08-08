@@ -38,6 +38,9 @@ namespace V10
             {
                 Hide();
             }
+
+            // DEBUG MP 
+            Hide();
         }
 
         private void GameInput_OnBindingRebind(object sender, System.EventArgs e)

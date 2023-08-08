@@ -1,15 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace V10
 {
-    public class Player : MonoBehaviour, IKitchenObjectParent
+    public class Player : NetworkBehaviour, IKitchenObjectParent
     {
 
 
-        public static Player Instance { get; private set; }
+        //public static Player Instance { get; private set; }
 
 
         public event EventHandler OnPickedSomething;
@@ -21,7 +22,6 @@ namespace V10
 
 
         [SerializeField] private float moveSpeed = 7f;
-        [SerializeField] private GameInput gameInput;
         [SerializeField] private LayerMask countersLayerMask;
         [SerializeField] private Transform kitchenObjectHoldPoint;
 
@@ -34,17 +34,13 @@ namespace V10
 
         private void Awake()
         {
-            if (Instance != null)
-            {
-                Debug.LogError("There is more than one Player instance");
-            }
-            Instance = this;
+            //Instance = this;
         }
 
         private void Start()
         {
-            gameInput.OnInteractAction += GameInput_OnInteractAction;
-            gameInput.OnInteractAlternateAction += GameInput_OnInteractAlternateAction;
+            GameInput.Instance.OnInteractAction += GameInput_OnInteractAction;
+            GameInput.Instance.OnInteractAlternateAction += GameInput_OnInteractAlternateAction;
         }
 
         private void GameInput_OnInteractAlternateAction(object sender, EventArgs e)
@@ -69,6 +65,11 @@ namespace V10
 
         private void Update()
         {
+            if (!IsOwner)
+            {
+                return;
+            }
+
             HandleMovement();
             HandleInteractions();
         }
@@ -80,7 +81,7 @@ namespace V10
 
         private void HandleInteractions()
         {
-            Vector2 inputVector = gameInput.GetMovementVectorNormalized();
+            Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
 
             Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y);
 
@@ -112,9 +113,69 @@ namespace V10
             }
         }
 
+        //private void HandleMovementServerAuth()
+        //{
+        //    Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
+        //    HandleMovementServerRpc(inputVector);
+        //}
+
+        //[ServerRpc(RequireOwnership = false)]
+        //private void HandleMovementServerRpc(Vector2 inputVector)
+        //{
+        //    Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y);
+
+        //    float moveDistance = moveSpeed * Time.deltaTime;
+        //    float playerRadius = .7f;
+        //    float playerHeight = 2f;
+        //    bool canMove = !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDir, moveDistance);
+
+        //    if (!canMove)
+        //    {
+        //        // Cannot move towards moveDir
+
+        //        // Atempt only X movement
+        //        Vector3 moveDirX = new Vector3(moveDir.x, 0, 0).normalized;
+        //        canMove = (moveDir.x <= -.5f || moveDir.x > +.5f) && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirX, moveDistance);
+
+        //        if (canMove)
+        //        {
+        //            // Can move only on the X
+        //            moveDir = moveDirX;
+        //        }
+        //        else
+        //        {
+        //            // Cannot move only on the X
+
+        //            // Atempt only Z movement
+        //            Vector3 moveDirZ = new Vector3(0, 0, moveDir.z).normalized;
+        //            canMove = (moveDir.z <= -.5f || moveDir.z > +.5f) && !Physics.CapsuleCast(transform.position, transform.position + Vector3.up * playerHeight, playerRadius, moveDirZ, moveDistance);
+
+        //            if (canMove)
+        //            {
+        //                // Can move only on the Z
+        //                moveDir = moveDirZ;
+        //            }
+        //            else
+        //            {
+        //                // Cannot move in any direction
+        //            }
+        //        }
+        //    }
+
+        //    if (canMove)
+        //    {
+        //        transform.position += moveDir * moveDistance;
+        //    }
+
+        //    isWalking = moveDir != Vector3.zero;
+
+        //    float rotateSpeed = 10f;
+        //    transform.forward = Vector3.Slerp(transform.forward, moveDir, Time.deltaTime * rotateSpeed);
+        //}
+
         private void HandleMovement()
         {
-            Vector2 inputVector = gameInput.GetMovementVectorNormalized();
+            Vector2 inputVector = GameInput.Instance.GetMovementVectorNormalized();
 
             Vector3 moveDir = new Vector3(inputVector.x, 0f, inputVector.y);
 
