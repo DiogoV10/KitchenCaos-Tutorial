@@ -1,11 +1,12 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace V10
 {
-    public class BaseCounter : MonoBehaviour, IKitchenObjectParent
+    public class BaseCounter : NetworkBehaviour, IKitchenObjectParent
     {
 
 
@@ -62,6 +63,11 @@ namespace V10
         public bool HasKitchenObject()
         {
             return kitchenObject != null;
+        }
+
+        public NetworkObject GetNetworkObject()
+        {
+            return NetworkObject;
         }
 
 

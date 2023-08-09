@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace V10
@@ -22,10 +23,25 @@ namespace V10
         {
             if (player.HasKitchenObject())
             {
-                player.GetKitchenObject().DestroySelf();
+                KitchenObject.DestroyKitchenObject(player.GetKitchenObject());
 
-                OnAnyObjectTrashed?.Invoke(this, EventArgs.Empty);
+                InteractLogicServerRPC();
             }
         }
+
+        [ServerRpc(RequireOwnership = false)]
+        private void InteractLogicServerRPC()
+        {
+            InteractLogicClientRPC();
+        }
+
+        [ClientRpc]
+        private void InteractLogicClientRPC()
+        {
+
+            OnAnyObjectTrashed?.Invoke(this, EventArgs.Empty);
+        }
+
+
     }
 }

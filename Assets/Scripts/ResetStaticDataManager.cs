@@ -13,6 +13,7 @@ namespace V10
             CuttingCounter.ResetStaticData();
             BaseCounter.ResetStaticData();
             TrashCounter.ResetStaticData();
+            Player.ResetStaticData();
         }
 
 
