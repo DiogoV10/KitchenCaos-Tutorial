@@ -61,6 +61,19 @@ namespace V10
             transform.position = spawnPositionList[(int)OwnerClientId];
 
             OnAnyPlayerSpawned?.Invoke(this, EventArgs.Empty);
+
+            if (IsServer)
+            {
+                NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+            }
+        }
+
+        private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
+        {
+            if (clientId == OwnerClientId && HasKitchenObject())
+            {
+                KitchenObject.DestroyKitchenObject(GetKitchenObject());
+            }
         }
 
         private void GameInput_OnInteractAlternateAction(object sender, EventArgs e)

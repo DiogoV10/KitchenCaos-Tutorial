@@ -30,6 +30,9 @@ namespace V10
         }
 
 
+        [SerializeField] private Transform playerPrefab;
+
+
         private NetworkVariable<State> state = new NetworkVariable<State>(State.WaitingToStart);
         private bool isLocalPlayerReady;
         private NetworkVariable<float> countdownToStartTimer = new NetworkVariable<float>(3f);
@@ -39,6 +42,7 @@ namespace V10
         private NetworkVariable<bool> isGamePaused = new NetworkVariable<bool>(false);
         private Dictionary<ulong, bool> playerReadyDictionary;
         private Dictionary<ulong, bool> playerPausedDictionary;
+        private bool autoTestGamePausedState;
 
 
         private void Awake()
@@ -59,6 +63,26 @@ namespace V10
         {
             state.OnValueChanged += State_OnValueChanged;
             isGamePaused.OnValueChanged += IsGamePaused_OnValueChanged;
+
+            if (IsServer)
+            {
+                NetworkManager.Singleton.OnClientDisconnectCallback += NetworkManager_OnClientDisconnectCallback;
+                NetworkManager.Singleton.SceneManager.OnLoadEventCompleted += SceneManager_OnLoadEventCompleted;
+            }
+        }
+
+        private void SceneManager_OnLoadEventCompleted(string sceneName, UnityEngine.SceneManagement.LoadSceneMode loadSceneMode, List<ulong> clientsCompleted, List<ulong> clientsTimedOut)
+        {
+            foreach (ulong clientId in NetworkManager.Singleton.ConnectedClientsIds)
+            {
+                Transform playerTransform = Instantiate(playerPrefab);
+                playerTransform.GetComponent<NetworkObject>().SpawnAsPlayerObject(clientId, true);
+            }
+        }
+
+        private void NetworkManager_OnClientDisconnectCallback(ulong clientId)
+        {
+            autoTestGamePausedState = true;
         }
 
         private void IsGamePaused_OnValueChanged(bool previousValue, bool newValue)
@@ -152,6 +176,15 @@ namespace V10
             }
         }
 
+        private void LateUpdate()
+        {
+            if (autoTestGamePausedState)
+            {
+                autoTestGamePausedState = false;
+                TestGamePausedState();
+            }
+        }
+
         public bool IsGamePlaying()
         {
             return state.Value == State.GamePlaying;
@@ -175,6 +208,11 @@ namespace V10
         public bool IsLocalPlayerReady()
         {
             return isLocalPlayerReady;
+        }
+
+        public bool IsWaitingToStart()
+        {
+            return state.Value == State.WaitingToStart;
         }
 
         public float GetGamePlayingTimerNormalized()
