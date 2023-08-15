@@ -78,6 +78,8 @@ namespace V10
         private void Show()
         {
             gameObject.SetActive(true);
+
+            closeButton.Select();
         }
 
         private void Hide()
@@ -88,6 +90,11 @@ namespace V10
         private void OnDestroy()
         {
             KitchenGameMultiplayer.Instance.OnFailedToJoinGame -= KitchenGameMultiplayer_OnFailedToJoinGame;
+            KitchenGameLobby.Instance.OnCreateLobbyStarted -= KitchenGameLobby_OnCreateLobbyStarted;
+            KitchenGameLobby.Instance.OnCreateLobbyFailed -= KitchenGameLobby_OnCreateLobbyFailed;
+            KitchenGameLobby.Instance.OnJoinStarted -= KitchenGameLobby_OnJoinStarted;
+            KitchenGameLobby.Instance.OnJoinFailed -= KitchenGameLobby_OnJoinFailed;
+            KitchenGameLobby.Instance.OnQuickJoinFailed -= KitchenGameLobby_OnQuickJoinFailed;
         }
 
 

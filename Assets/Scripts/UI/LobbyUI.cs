@@ -81,6 +81,11 @@ namespace V10
             }
         }
 
+        private void OnDestroy()
+        {
+            KitchenGameLobby.Instance.OnLobbyListChanged -= KitchenGameLobby_OnLobbyListChanged;
+        }
+
 
     }
 }

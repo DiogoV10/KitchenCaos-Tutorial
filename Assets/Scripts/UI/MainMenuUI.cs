@@ -10,13 +10,21 @@ namespace V10
     {
 
 
-        [SerializeField] private Button playButton;
+        [SerializeField] private Button playMultiplayerButton;
+        [SerializeField] private Button playSingleplayerButton;
         [SerializeField] private Button quitButton;
 
         private void Awake()
         {
-            playButton.onClick.AddListener(() =>
+            playMultiplayerButton.onClick.AddListener(() =>
             {
+                KitchenGameMultiplayer.playMultiplayer = true;
+                Loader.Load(Loader.Scene.LobbyScene);
+            });
+
+            playSingleplayerButton.onClick.AddListener(() =>
+            {
+                KitchenGameMultiplayer.playMultiplayer = false;
                 Loader.Load(Loader.Scene.LobbyScene);
             });
 
