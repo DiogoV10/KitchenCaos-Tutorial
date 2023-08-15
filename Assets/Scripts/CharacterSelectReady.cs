@@ -51,6 +51,7 @@ namespace V10
 
             if (allClientsReady)
             {
+                KitchenGameLobby.Instance.DeleteLobby();
                 Loader.LoadNetwork(Loader.Scene.GameScene);
             }
         }

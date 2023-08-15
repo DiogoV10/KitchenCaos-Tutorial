@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
@@ -14,6 +15,7 @@ namespace V10
         [SerializeField] private GameObject readyGameObject;
         [SerializeField] private PlayerVisual playerVisual;
         [SerializeField] private Button kickButton;
+        [SerializeField] private TextMeshPro playerNameText;
 
 
         private void Awake()
@@ -21,7 +23,7 @@ namespace V10
             kickButton.onClick.AddListener(() =>
             {
                 PlayerData playerData = KitchenGameMultiplayer.Instance.GetPlayerDataFromPlayerIndex(playerIndex);
-
+                KitchenGameLobby.Instance.KickPlayer(playerData.playerId.ToString());
                 KitchenGameMultiplayer.Instance.KickPlayer(playerData.clientId);
             });
         }
@@ -55,6 +57,8 @@ namespace V10
                 PlayerData playerData = KitchenGameMultiplayer.Instance.GetPlayerDataFromPlayerIndex(playerIndex);
 
                 readyGameObject.SetActive(CharacterSelectReady.Instance.IsPlayerReady(playerData.clientId));
+
+                playerNameText.text = playerData.playerName.ToString();
 
                 playerVisual.SetPlayerColor(KitchenGameMultiplayer.Instance.GetPlayerColor(playerData.colorId));
             }
